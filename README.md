@@ -13,6 +13,7 @@ express
 dotenv
 express-rate-limit
 openai
+node-notifier
 ```
 
 Clone the repository:

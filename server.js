@@ -1,6 +1,7 @@
 const express = require("express");
 const dotenv = require("dotenv").config();
 const rateLimiter = require("express-rate-limit");
+const notifier = require("node-notifier");
 const app = express();
 const PORT = process.env.PORT || 3000;
 const { Configuration, OpenAIApi } = require("openai");
@@ -102,10 +103,13 @@ app.post("/requestActivity", limiter, async (req, res) => {
   );
   console.log(model.prompt);
   try {
-    const modResponse = await openai.createModeration({ input: initialPrompt });
+    const modResponse = await openai.createModeration({ input: similarPrompt });
     let promptSent;
     if (modResponse.data.results[0].flagged) {
-      responseToPrint = "Your liked activities do not respect our community guidelines.  Please reword.";
+      notifier.notify({
+        title: "Content flagged",
+        message: "Your liked activities were flagged by OpenAI's Moderation.  Please re-phrase.",
+      });
     } else {
       promptSent = await openai.createCompletion(model);
     }
