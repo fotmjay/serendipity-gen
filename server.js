@@ -36,19 +36,14 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.get("/", (req, res) => {
-  if (Object.keys(responseToPrint)) {
-    const pushAnswer = [];
-    const n = Object.keys(responseToPrint);
-    console.log(n);
-    console.log(responseToPrint);
-    for (let i = 1; i <= n.length; i++) {
-      pushAnswer.push([responseToPrint[i].title, responseToPrint[i].desc]);
-    }
-    console.log(pushAnswer, typeof pushAnswer, pushAnswer.length);
-    res.render("pages/index", { pushAnswer: pushAnswer });
-  } else {
-    res.render("pages/index");
+  const pushAnswer = [];
+  const n = Object.keys(responseToPrint);
+  console.log(responseToPrint);
+  for (let i = 1; i <= n.length; i++) {
+    pushAnswer.push([responseToPrint[i].title, responseToPrint[i].desc]);
   }
+  responseToPrint = "";
+  res.render("pages/index", { pushAnswer: pushAnswer });
 });
 
 app.post("/requestActivity", limiter, async (req, res) => {
@@ -104,6 +99,7 @@ app.post("/requestActivity", limiter, async (req, res) => {
   );
   try {
     const modResponse = await openai.createModeration({ input: similarPrompt });
+    console.log("sent to moderation");
     if (modResponse.data.results[0].flagged) {
       responseToPrint = {
         1: {
@@ -114,6 +110,7 @@ app.post("/requestActivity", limiter, async (req, res) => {
     } else {
       try {
         const promptSent = await openai.createCompletion(model);
+        console.log("sent to gpt");
         responseToPrint = await JSON.parse(promptSent.data.choices[0].text);
       } catch (err) {
         console.log("error:" & err.message);
