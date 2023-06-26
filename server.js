@@ -1,7 +1,6 @@
 const express = require("express");
 const dotenv = require("dotenv").config();
 const rateLimiter = require("express-rate-limit");
-const notifier = require("node-notifier");
 const app = express();
 const PORT = process.env.PORT || 3000;
 const { Configuration, OpenAIApi } = require("openai");
@@ -25,6 +24,7 @@ const limiter = rateLimiter({
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
 });
 let responseToPrint = "";
+let moderated = false;
 
 const jsonExample =
   '{"1":{"title":"Activity 1 title","desc":"Activity 1 description (1 sentence)"},"2":{"title":"Activity 2 title","desc":"Activity 2 description (1 sentence)"}}';
@@ -40,6 +40,7 @@ app.get("/", (req, res) => {
     const pushAnswer = [];
     const n = Object.keys(responseToPrint);
     console.log(n);
+    console.log(responseToPrint);
     for (let i = 1; i <= n.length; i++) {
       pushAnswer.push([responseToPrint[i].title, responseToPrint[i].desc]);
     }
@@ -106,15 +107,17 @@ app.post("/requestActivity", limiter, async (req, res) => {
     const modResponse = await openai.createModeration({ input: similarPrompt });
     let promptSent;
     if (modResponse.data.results[0].flagged) {
-      notifier.notify({
-        title: "Content flagged",
-        message: "Your liked activities were flagged by OpenAI's Moderation.  Please re-phrase.",
-      });
+      responseToPrint = {
+        1: {
+          title: "Content flagged",
+          desc: "OpenAI's moderation tools flagged your activities. Please reword.",
+        },
+      };
     } else {
       promptSent = await openai.createCompletion(model);
+      responseToPrint = await JSON.parse(promptSent.data.choices[0].text);
     }
     console.log(promptSent.data);
-    responseToPrint = await JSON.parse(promptSent.data.choices[0].text);
   } catch (err) {
     console.log("error:" & err.message);
   }
