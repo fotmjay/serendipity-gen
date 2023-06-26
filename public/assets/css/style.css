@@ -12,7 +12,7 @@ datalist {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  writing-mode: sideways-lr;
+  writing-mode: horizontal-tb;
   width: 200px;
 }
 

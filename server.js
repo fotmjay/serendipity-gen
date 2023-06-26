@@ -12,7 +12,7 @@ const openai = new OpenAIApi(configuration);
 const model = {
   model: "text-davinci-003",
   prompt: "",
-  max_tokens: 150,
+  max_tokens: 200,
   temperature: 1,
 };
 const limiter = rateLimiter({
@@ -102,10 +102,8 @@ app.post("/requestActivity", limiter, async (req, res) => {
     requestNumber,
     friendsPrompt
   );
-  console.log(model.prompt);
   try {
     const modResponse = await openai.createModeration({ input: similarPrompt });
-    let promptSent;
     if (modResponse.data.results[0].flagged) {
       responseToPrint = {
         1: {
@@ -114,8 +112,12 @@ app.post("/requestActivity", limiter, async (req, res) => {
         },
       };
     } else {
-      promptSent = await openai.createCompletion(model);
-      responseToPrint = await JSON.parse(promptSent.data.choices[0].text);
+      try {
+        const promptSent = await openai.createCompletion(model);
+        responseToPrint = await JSON.parse(promptSent.data.choices[0].text);
+      } catch (err) {
+        console.log("error:" & err.message);
+      }
     }
     console.log(promptSent.data);
   } catch (err) {
