@@ -78,6 +78,10 @@ Gain experience in integrating third-party APIs into a project, in this case, th
 
 Learn how to build a server-side application using Express.js, handle API requests, and manage user data.
 
+### EJS
+
+I had never used EJS before and decided to give it a go for a quick integration, which obviously ended up eating a certain amount of time.
+
 ### Environment Setup
 
 Understand how to configure and use environment variables to secure sensitive information, such as API keys.
