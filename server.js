@@ -1,32 +1,23 @@
 require("dotenv").config();
+const messages = require("./lib/messages");
+const CONSTANTS = require("./lib/constants");
 const express = require("express");
 const rateLimiter = require("express-rate-limit");
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || CONSTANTS.DEFAULTPORT;
 const { Configuration, OpenAIApi } = require("openai");
 const configuration = new Configuration({
   organization: process.env.OPENAI_ORG,
   apiKey: process.env.OPENAI_API_KEY,
 });
 const openai = new OpenAIApi(configuration);
-const model = {
-  model: "text-davinci-003",
-  prompt: "",
-  max_tokens: 200,
-  temperature: 1,
-};
 const limiter = rateLimiter({
-  windowMs: 20 * 1000, // 20s
-  max: 2, // Limit each IP to 2 requests per `window`
-  message:
-    "Your access to our API has been temporarily rate-limited. <br/> This limitation is in place to ensure fair usage and manage costs associated with providing access to the OpenAI API, which operates on a usage-based pricing model.",
+  windowMs: CONSTANTS.LIMITWINDOW,
+  max: CONSTANTS.MAXTRIES,
+  message: messages.RATELIMITMESSAGE,
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
 });
-
-const jsonExample =
-  '{"1":{"title":"Activity 1 title","desc":"Activity 1 description (1 sentence)"},"2":{"title":"Activity 2 title","desc":"Activity 2 description (1 sentence)"}}';
-const initialPrompt = `You are a spontaneous suggestion bot.Vary suggestions.Do NOT use precisely what the user has liked: your goal is to find new activities they could like.Think out-of-the-box but keep it realistic.Here is a response template:  ${jsonExample}`;
 
 app.set("view engine", "ejs");
 app.use("/public", express.static("public"));
@@ -34,8 +25,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.get("/", (req, res) => {
-  const pushAnswer = [];
-  res.render("pages/index", { pushAnswer: pushAnswer });
+  res.render("pages/index", { pushAnswer: "" });
 });
 
 app.post("/requestActivity", limiter, async (req, res) => {
@@ -83,7 +73,7 @@ app.post("/requestActivity", limiter, async (req, res) => {
         break;
     }
   }
-  model.prompt = initialPrompt.concat(
+  CONSTANTS.modelAI.prompt = messages.initialPrompt.concat(
     "\n Specific details:",
     creativePrompt,
     environmentPrompt,
@@ -94,22 +84,17 @@ app.post("/requestActivity", limiter, async (req, res) => {
   let responseToPrint = "";
   try {
     const modResponse = await openai.createModeration({ input: similarPrompt });
-    console.log("sent to moderation");
+    console.log("sent to moderation:", modResponse.data);
     if (modResponse.data.results[0].flagged) {
-      responseToPrint = {
-        1: {
-          title: "Content flagged",
-          desc: "OpenAI's moderation tools flagged your activities. Please reword.",
-        },
-      };
+      responseToPrint = messages.MODFLAG;
     } else {
-      const promptSent = await openai.createCompletion(model);
-      console.log("sent to gpt");
-      console.log(promptSent);
+      const promptSent = await openai.createCompletion(CONSTANTS.modelAI);
+      console.log("sent to gpt: " + CONSTANTS.modelAI.prompt);
       responseToPrint = await JSON.parse(promptSent.data.choices[0].text);
+      console.log("return: ", promptSent.data);
     }
   } catch (err) {
-    console.log("error: " & err.message);
+    console.error("error: " & err.message);
   }
   const pushAnswer = [];
   const n = Object.keys(responseToPrint);
