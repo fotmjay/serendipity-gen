@@ -42,6 +42,7 @@ app.post("/requestActivity", limiter, async (req, res) => {
       modelReady.prompt = messages.initialPrompt.concat("\n Specific details:", prompt);
       const promptSent = await openai.createCompletion(modelReady);
       responseToPrint = await JSON.parse(promptSent.data.choices[0].text);
+      console.log("return: ", promptSent.data);
     }
   } catch (err) {
     console.log(err);
