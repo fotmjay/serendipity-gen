@@ -1,5 +1,5 @@
+require("dotenv").config();
 const express = require("express");
-const dotenv = require("dotenv").config();
 const rateLimiter = require("express-rate-limit");
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -16,15 +16,13 @@ const model = {
   temperature: 1,
 };
 const limiter = rateLimiter({
-  windowMs: 20 * 1000, // 60s
-  max: 2, // Limit each IP to 100 requests per `window`
+  windowMs: 20 * 1000, // 20s
+  max: 2, // Limit each IP to 2 requests per `window`
   message:
     "Your access to our API has been temporarily rate-limited. <br/> This limitation is in place to ensure fair usage and manage costs associated with providing access to the OpenAI API, which operates on a usage-based pricing model.",
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
 });
-let responseToPrint = "";
-let moderated = false;
 
 const jsonExample =
   '{"1":{"title":"Activity 1 title","desc":"Activity 1 description (1 sentence)"},"2":{"title":"Activity 2 title","desc":"Activity 2 description (1 sentence)"}}';
@@ -81,6 +79,8 @@ app.post("/requestActivity", limiter, async (req, res) => {
           friendsPrompt = `User is alone.`;
         }
         break;
+      default:
+        break;
     }
   }
   model.prompt = initialPrompt.concat(
@@ -91,6 +91,7 @@ app.post("/requestActivity", limiter, async (req, res) => {
     requestNumber,
     friendsPrompt
   );
+  let responseToPrint = "";
   try {
     const modResponse = await openai.createModeration({ input: similarPrompt });
     console.log("sent to moderation");
@@ -104,15 +105,14 @@ app.post("/requestActivity", limiter, async (req, res) => {
     } else {
       const promptSent = await openai.createCompletion(model);
       console.log("sent to gpt");
+      console.log(promptSent);
       responseToPrint = await JSON.parse(promptSent.data.choices[0].text);
     }
-    console.log(promptSent.data);
   } catch (err) {
-    console.log("error:" & err.message);
+    console.log("error: " & err.message);
   }
   const pushAnswer = [];
   const n = Object.keys(responseToPrint);
-  console.log(responseToPrint);
   for (let i = 1; i <= n.length; i++) {
     pushAnswer.push([responseToPrint[i].title, responseToPrint[i].desc]);
   }
