@@ -1,5 +1,5 @@
 require("dotenv").config();
-const variables = require("./lib/variables");
+const message = require("./lib/messages");
 const CONSTANTS = require("./lib/constants");
 const express = require("express");
 const rateLimiter = require("express-rate-limit");
@@ -12,9 +12,9 @@ const configuration = new Configuration({
 });
 const openai = new OpenAIApi(configuration);
 const limiter = rateLimiter({
-  windowMs: CONSTANTS.LIMITWINDOW * 1000, // * 1000 milliseconds
+  windowMs: CONSTANTS.LIMITWINDOW,
   max: CONSTANTS.MAXTRIES,
-  message: CONSTANTS.RATELIMITMESSAGE,
+  message: message.RATELIMITMESSAGE,
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
 });
@@ -73,7 +73,7 @@ app.post("/requestActivity", limiter, async (req, res) => {
         break;
     }
   }
-  variables.modelAI.prompt = variables.initialPrompt.concat(
+  CONSTANTS.modelAI.prompt = message.initialPrompt.concat(
     "\n Specific details:",
     creativePrompt,
     environmentPrompt,
@@ -86,10 +86,10 @@ app.post("/requestActivity", limiter, async (req, res) => {
     const modResponse = await openai.createModeration({ input: similarPrompt });
     console.log("sent to moderation");
     if (modResponse.data.results[0].flagged) {
-      responseToPrint = CONSTANTS.MODFLAG;
+      responseToPrint = messages.MODFLAG;
     } else {
-      const promptSent = await openai.createCompletion(variables.modelAI);
-      console.log("sent to gpt: " + variables.modelAI.prompt);
+      const promptSent = await openai.createCompletion(CONSTANTS.modelAI);
+      console.log("sent to gpt: " + CONSTANTS.modelAI.prompt);
       responseToPrint = await JSON.parse(promptSent.data.choices[0].text);
       console.log("return: ", promptSent.data);
     }
