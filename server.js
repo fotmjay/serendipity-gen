@@ -29,72 +29,23 @@ app.get("/", (req, res) => {
 });
 
 app.post("/requestActivity", limiter, async (req, res) => {
-  const body = req.body;
-  let creativePrompt = "";
-  let environmentPrompt = "";
-  let similarPrompt = "";
-  let requestNumber = "";
-  let friendsPrompt = "";
-  console.log(body);
-  for (let detail in body) {
-    switch (detail) {
-      case "creativity":
-        creativePrompt = `Openmindedness at ${body[detail]}/100.`;
-        break;
-      case "environment":
-        if (body[detail] === "inside") {
-          environmentPrompt = `Inside activity.`;
-        } else if (body[detail] === "outside") {
-          environmentPrompt = "Outside activity.";
-        } else {
-          environmentPrompt = "Outside or inside activity.";
-        }
-        break;
-      case "moreInfo":
-        if (body[detail]) {
-          similarPrompt = `User likes: ${body[detail]}.`;
-        }
-        break;
-      case "inputAct":
-        if (body[detail] > 1) {
-          requestNumber = `Give ${body[detail]} suggestion.`;
-        } else {
-          requestNumber = "Give 1 suggestion.";
-        }
-        break;
-      case "numFriends":
-        if (body[detail] > 1) {
-          friendsPrompt = `Group of ${body[detail]} friends.`;
-        } else {
-          friendsPrompt = `User is alone.`;
-        }
-        break;
-      default:
-        break;
-    }
-  }
-  CONSTANTS.modelAI.prompt = messages.initialPrompt.concat(
-    "\n Specific details:",
-    creativePrompt,
-    environmentPrompt,
-    similarPrompt,
-    requestNumber,
-    friendsPrompt
-  );
+  const prompt = createPrompt(req.body);
+  console.log(prompt); // keeping it for troubleshooting
   let responseToPrint = "";
   try {
-    const modResponse = await openai.createModeration({ input: similarPrompt });
+    const modResponse = await openai.createModeration({ input: prompt });
     console.log("sent to moderation:", modResponse.data);
     if (modResponse.data.results[0].flagged) {
       responseToPrint = messages.MODFLAG;
     } else {
-      const promptSent = await openai.createCompletion(CONSTANTS.modelAI);
-      console.log("sent to gpt: " + CONSTANTS.modelAI.prompt);
+      const modelReady = CONSTANTS.modelAI;
+      modelReady.prompt = messages.initialPrompt.concat("\n Specific details:", prompt);
+      const promptSent = await openai.createCompletion(modelReady);
       responseToPrint = await JSON.parse(promptSent.data.choices[0].text);
-      console.log("return: ", promptSent.data);
     }
   } catch (err) {
-    console.error("error: " & err.message);
+    console.log(err);
+    responseToPrint = messages.GPTERROR;
   }
   const pushAnswer = [];
   const n = Object.keys(responseToPrint);
@@ -107,3 +58,22 @@ app.post("/requestActivity", limiter, async (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}.`);
 });
+
+function createPrompt(form) {
+  let prompt = `Openmindedness at ${form.creativity}/100.`;
+  if (form.environment === "any") {
+    prompt += "Inside or outside.";
+  } else {
+    prompt += `${form.environment}.`;
+  }
+  if (Number(form.numFriends) > 1) {
+    prompt += `Group of ${form.numFriends}.`;
+  } else {
+    prompt += "User alone.";
+  }
+  if (form.moreInfo) {
+    prompt += `User likes: ${form.moreInfo}.`;
+  }
+  prompt += `${form.inputAct} ideas.`;
+  return prompt;
+}
