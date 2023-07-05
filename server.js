@@ -1,6 +1,8 @@
 require("dotenv").config();
 const messages = require("./lib/messages");
 const CONSTANTS = require("./lib/constants");
+const mainRoutes = require("./routes/main");
+const profileRoutes = require("./routes/profile");
 const express = require("express");
 const rateLimiter = require("express-rate-limit");
 const app = express();
@@ -24,9 +26,8 @@ app.use("/public", express.static("public"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.get("/", (req, res) => {
-  res.render("pages/index", { pushAnswer: "" });
-});
+//app.use("/profile", profileRoutes);
+app.use("/", mainRoutes);
 
 app.post("/requestActivity", limiter, async (req, res) => {
   const prompt = createPrompt(req.body);
