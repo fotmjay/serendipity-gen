@@ -1,13 +1,28 @@
-require("dotenv").config();
+require("dotenv").config({ path: "./config/.env" });
+
+// CONSTANTS
 const messages = require("./lib/messages");
 const CONSTANTS = require("./lib/constants");
+const PORT = process.env.PORT || CONSTANTS.DEFAULTPORT;
+
+//ROUTES
 const mainRoutes = require("./routes/main");
 const profileRoutes = require("./routes/profile");
+const authRoutes = require("./routes/auth");
+
+// MODULES
 const express = require("express");
 const rateLimiter = require("express-rate-limit");
-const app = express();
-const PORT = process.env.PORT || CONSTANTS.DEFAULTPORT;
+const mongoose = require("mongoose");
+const session = require("express-session");
+const passport = require("passport");
+const MongoStore = require("connect-mongo");
 const { Configuration, OpenAIApi } = require("openai");
+const morgan = require("morgan");
+const crypto = require("crypto");
+
+// INITIALIZATIONS
+const app = express();
 const configuration = new Configuration({
   organization: process.env.OPENAI_ORG,
   apiKey: process.env.OPENAI_API_KEY,
@@ -21,12 +36,38 @@ const limiter = rateLimiter({
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
 });
 
+// CONFIGS
+const connectDB = require("./config/database");
+require("./config/passport")(passport);
+
+// CONNECT TO DATABASE
+connectDB();
+
+// SET VIEWS
 app.set("view engine", "ejs");
+
+// PUBLIC
 app.use("/public", express.static("public"));
-app.use(express.json());
+
+// BODY PARSERS
 app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+
+//MIDDLEWARE
+app.use(morgan("tiny"));
+
+// SESSION CONFIG
+app.use(
+  session({
+    secret: "keyboard cat",
+    resave: false,
+    saveUninitialized: false,
+    store: MongoStore.create({ client: mongoose.connection.getClient() }),
+  })
+);
 
 //app.use("/profile", profileRoutes);
+app.use("/login", authRoutes);
 app.use("/", mainRoutes);
 
 app.post("/requestActivity", limiter, async (req, res) => {
