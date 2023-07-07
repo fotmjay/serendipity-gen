@@ -35,11 +35,11 @@
           <li>
             <a href="/"> <i class="zmdi zmdi-view-dashboard"></i> <span>Serendipity Generator</span> </a>
           </li>
-
+          <% if (userLogged) { %>
           <li>
             <a href="/profile"> <i class="zmdi zmdi-face"></i> <span>Profile</span> </a>
           </li>
-
+          <% } %>
           <li>
             <a href="/login"> <i class="zmdi zmdi-lock"></i> <span>Login</span> </a>
           </li>
@@ -61,7 +61,7 @@
               </a>
             </li>
           </ul>
-
+          <% if (userLogged) { %>
           <ul class="navbar-nav align-items-center right-nav-link">
             <li class="nav-item">
               <a class="nav-link dropdown-toggle dropdown-toggle-nocaret" data-toggle="dropdown" href="#">
@@ -94,12 +94,12 @@
               </ul>
             </li>
           </ul>
+          <% } %>
         </nav>
       </header>
       <!--End topbar header-->
 
       <div class="clearfix"></div>
-
       <div class="content-wrapper">
         <div class="container-fluid">
           <div class="row">
@@ -200,15 +200,17 @@
                 </div>
               </div>
             </div>
-            <% for (let i = 0; i < pushAnswer.length; i++) { %>
+            <% if (pushAnswer.length > 0) { %>
             <div class="col-12 col-lg-4 col-xl-4">
               <div class="card">
                 <div class="card-header">Suggestions</div>
                 <div class="card-body">
+                  <% for (let i = 0; i < pushAnswer.length; i++) { %>
                   <div class="card-header">
                     <h5><%= pushAnswer[i][0] %></h5>
                     <p><%= pushAnswer[i][1] %></p>
                   </div>
+                  <% } %>
                 </div>
               </div>
             </div>

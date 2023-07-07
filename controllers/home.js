@@ -1,5 +1,5 @@
 module.exports = {
   getIndex: (req, res) => {
-    res.render("pages/index", { pushAnswer: "" });
+    res.render("pages/index", { pushAnswer: "", userLogged: false });
   },
 };

@@ -9189,3 +9189,19 @@ datalist.datalistshort {
 .nopad {
   padding: 0;
 }
+
+.alert-message span {
+}
+
+li.alert-message {
+  padding: 5px;
+}
+
+ul.alert-message-ul {
+  list-style-type: none;
+  text-align: center;
+  background: rgba(25, 25, 78, 0.4);
+  color: #ffffff;
+  border: 1px solid rgba(200, 136, 0, 1);
+  padding: 5px;
+}
