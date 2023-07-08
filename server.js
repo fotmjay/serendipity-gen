@@ -15,15 +15,13 @@ const mongoose = require("mongoose");
 const passport = require("passport");
 const MongoStore = require("connect-mongo");
 const morgan = require("morgan");
-const cookieParser = require("cookie-parser");
 
 // INITIALIZATIONS
 const app = express();
 
 // CONFIGS
 const connectDB = require("./config/database");
-const User = require("./models/User");
-//require("./config/passport");
+require("./config/passport")(passport);
 
 // CONNECT TO DATABASE
 connectDB();
@@ -37,7 +35,6 @@ app.use("/public", express.static("public"));
 // BODY PARSERS
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(cookieParser());
 
 //MIDDLEWARE
 app.use(morgan("tiny"));
@@ -46,23 +43,24 @@ app.use(morgan("tiny"));
 app.use(
   session({
     secret: "keyboard cat",
-    resave: true,
-    saveUninitialized: true,
+    resave: false,
+    saveUninitialized: false,
     store: MongoStore.create({ client: mongoose.connection.getClient() }),
+    cookie: {
+      secure: false,
+    },
   })
 );
-
-// use static authenticate method of model in LocalStrategy
-passport.use(User.createStrategy());
-
-// use static serialize and deserialize of model for passport session support
-passport.serializeUser(User.serializeUser());
-passport.deserializeUser(User.deserializeUser());
+// Passport middleware
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.use(flash());
 
+// ROUTES
 app.use("/", mainRoutes);
 
+// SERVER LAUNCH
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}.`);
 });

@@ -10,9 +10,9 @@ const { ensureAuth } = require("../middleware/auth");
 router.get("/", homeController.getIndex);
 
 // GET Pages
+router.get("/profile", ensureAuth, homeController.getProfile);
 router.get("/login", authController.getLogin);
 router.get("/register", authController.getRegister);
-router.get("/profile", ensureAuth, authController.getProfile);
 
 // GET SUGGESTION
 router.post("/requestActivity", limiter, openAIController.postActivity);
@@ -22,5 +22,8 @@ router.post("/login", authController.postLogin);
 
 // SIGN UP
 router.post("/register", authController.postRegister);
+
+// LOG OUT
+router.post("/logMeOut", authController.logMeOut);
 
 module.exports = router;

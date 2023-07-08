@@ -1,5 +1,5 @@
 module.exports = {
   getProfile: (req, res) => {
-    res.render("pages/profile");
+    res.render("pages/profile", { userLogged: req.user });
   },
 };

@@ -36,10 +36,11 @@
             <a href="/"> <i class="zmdi zmdi-view-dashboard"></i> <span>Serendipity Generator</span> </a>
           </li>
 
+          <% if (userLogged) { %>
           <li>
             <a href="/profile"> <i class="zmdi zmdi-face"></i> <span>Profile</span> </a>
           </li>
-
+          <% } if (!userLogged) { %>
           <li>
             <a href="/login"> <i class="zmdi zmdi-lock"></i> <span>Login</span> </a>
           </li>
@@ -47,6 +48,7 @@
           <li>
             <a href="/register"> <i class="zmdi zmdi-account-circle"></i> <span>Registration</span> </a>
           </li>
+          <% } %>
         </ul>
       </div>
       <!--End sidebar-wrapper-->

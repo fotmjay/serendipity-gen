@@ -47,6 +47,6 @@ module.exports = {
     for (let i = 1; i <= n.length; i++) {
       pushAnswer.push([responseToPrint[i].title, responseToPrint[i].desc]);
     }
-    res.render("pages/index", { pushAnswer: pushAnswer, userLogged: false });
+    res.render("pages/index", { pushAnswer: pushAnswer, userLogged: req.user });
   },
 };

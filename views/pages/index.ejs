@@ -39,7 +39,7 @@
           <li>
             <a href="/profile"> <i class="zmdi zmdi-face"></i> <span>Profile</span> </a>
           </li>
-          <% } %>
+          <% } if (!userLogged) { %>
           <li>
             <a href="/login"> <i class="zmdi zmdi-lock"></i> <span>Login</span> </a>
           </li>
@@ -47,6 +47,7 @@
           <li>
             <a href="/register"> <i class="zmdi zmdi-account-circle"></i> <span>Registration</span> </a>
           </li>
+          <% } %>
         </ul>
       </div>
       <!--End sidebar-wrapper-->
@@ -207,8 +208,10 @@
                 <div class="card-body">
                   <% for (let i = 0; i < pushAnswer.length; i++) { %>
                   <div class="card-header">
-                    <h5><%= pushAnswer[i][0] %></h5>
-                    <p><%= pushAnswer[i][1] %></p>
+                    <h5 data-id="<%= i %>">
+                      <% if (userLogged) {%><i class="fa fa-heart-o lg"><% } %></i> <%= pushAnswer[i][0] %>
+                    </h5>
+                    <p data-id="<%= i %>"><%= pushAnswer[i][1] %></p>
                   </div>
                   <% } %>
                 </div>
