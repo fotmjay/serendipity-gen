@@ -3,14 +3,29 @@ const User = require("../models/User");
 const validator = require("validator");
 
 module.exports = {
-  getLogin: (req, res) => {
-    res.render("pages/login");
-  },
-  getRegister: (req, res) => {
-    res.render("pages/register");
-  },
-  postLogin: (req, res) => {
-    res.render("pages/profile");
+  postLogin: (req, res, next) => {
+    const validationErrors = [];
+    if (validator.isEmpty(req.body.password)) validationErrors.push({ msg: "Password cannot be blank." });
+    if (validationErrors.length) {
+      req.flash("errors", validationErrors);
+      return res.redirect("/login");
+    }
+    passport.authenticate("local", (err, user, info) => {
+      if (err) {
+        return next(err);
+      }
+      if (!user) {
+        req.flash("errors", info);
+        return res.redirect("/login");
+      }
+      req.logIn(user, (err) => {
+        if (err) {
+          return next(err);
+        }
+        req.flash("success", { msg: "Success! You are logged in." });
+        res.redirect("/");
+      });
+    })(req, res, next);
   },
   postRegister: async (req, res) => {
     console.log(req.body);
@@ -18,7 +33,8 @@ module.exports = {
     const validationErrors = [];
     const email = validator.trim(req.body.email);
     const username = validator.trim(req.body.username);
-    //if (username.length < 7) validationErrors.push({ msg: "Username needs to be at least 8 characters." });
+    if (username.length < 5) validationErrors.push({ msg: "Username needs to be at least 6 characters." });
+    if (req.body.password.length < 8) validationErrors.push({ msg: "Password needs to be at least 8 characters." });
     if (!validator.isEmail(req.body.email)) validationErrors.push({ msg: "Please enter a valid email address." });
     if (req.body.password !== req.body.confirmPass || validator.isEmpty(req.body.password))
       validationErrors.push({ msg: "Passwords do not match." });
@@ -26,28 +42,29 @@ module.exports = {
     if (validationErrors.length) {
       req.flash("errors", validationErrors);
       res.redirect("/register");
-      res.end();
-    }
-    try {
-      const exists = await User.findOne({ $or: [{ email: email }, { username: username }] });
-      if (!exists) {
-        let newUser = new User({ username: username, email: email });
-        // Call setPassword function to hash password and set it
-        newUser.setPassword(req.body.password);
-        const saved = await newUser.save();
-        if (saved) {
-          req.login(newUser, function (err) {
-            if (err) {
-              return next(err);
-            }
-            res.redirect("/");
-          });
+    } else {
+      try {
+        const exists = await User.findOne({ $or: [{ email: email }, { username: username }] });
+        if (!exists) {
+          let newUser = new User({ username: username, email: email });
+          // Call setPassword function to hash password and set it
+          newUser.setPassword(req.body.password);
+          const saved = await newUser.save();
+          if (saved) {
+            req.login(newUser, function (err) {
+              if (err) {
+                return next(err);
+              }
+              res.redirect("/");
+            });
+          }
+        } else {
+          req.flash("errors", { msg: "An account with that email address or username already exists." });
+          res.redirect("/register");
         }
-      } else {
-        req.flash("errors", { msg: "Account with that email address or username already exists." });
+      } catch (err) {
+        console.error(err + " : ERROR ");
       }
-    } catch (err) {
-      console.error(err + " : ERROR ");
     }
   },
   logMeOut: function (req, res, next) {

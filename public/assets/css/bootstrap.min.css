@@ -9190,9 +9190,6 @@ datalist.datalistshort {
   padding: 0;
 }
 
-.alert-message span {
-}
-
 li.alert-message {
   padding: 5px;
 }
@@ -9204,4 +9201,18 @@ ul.alert-message-ul {
   color: #ffffff;
   border: 1px solid rgba(200, 136, 0, 1);
   padding: 5px;
+}
+
+ul.dropdown-menu-right li.dropdown-item {
+  cursor: pointer;
+}
+
+ul.dropdown-menu-right li.dropdown-item:hover {
+  background: rgba(25, 25, 78, 0.4);
+  border: 1px solid rgba(200, 136, 0, 1);
+}
+
+ul.dropdown-menu-right li.dropdown-item:hover {
+  background: rgba(25, 25, 78, 0.4);
+  border: 1px solid rgba(200, 136, 0, 1);
 }

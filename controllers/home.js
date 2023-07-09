@@ -1,10 +1,14 @@
 module.exports = {
   getIndex: (req, res) => {
-    console.log(req.user);
-    console.log(req.session);
     res.render("pages/index", { pushAnswer: "", userLogged: req.user });
   },
   getProfile: (req, res) => {
     res.render("pages/profile", { userLogged: req.user });
+  },
+  getLogin: (req, res) => {
+    res.render("pages/login", { userLogged: req.user });
+  },
+  getRegister: (req, res) => {
+    res.render("pages/register");
   },
 };

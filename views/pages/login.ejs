@@ -48,11 +48,21 @@
               <a href="/"><img src="public/assets/images/logo-icon.png" alt="logo icon" /></a>
             </div>
             <div class="card-title text-uppercase text-center py-3">Sign In</div>
+            <% if (locals.messages.errors || locals.messages.info) { %>
+            <ul class="alert-message-ul">
+              <% messages.errors.forEach( el => { %>
+              <li class="alert-message"><span><%= el.msg %></span></li>
+              <% }) %> <% } %> <% if (locals.messages.info) { %> <% messages.info.forEach( el => { %>
+              <li class="alert-message"><span><%= el.msg %></span></li>
+              <% }) %> <% } %> <% if (locals.messages.errors || locals.messages.info) { %>
+            </ul>
+            <% } %>
             <form method="POST">
               <div class="form-group">
                 <label for="exampleInputUsername" class="sr-only">Username</label>
                 <div class="position-relative has-icon-right">
                   <input
+                    name="username"
                     type="text"
                     id="exampleInputUsername"
                     class="form-control input-shadow"
@@ -67,6 +77,7 @@
                 <label for="exampleInputPassword" class="sr-only">Password</label>
                 <div class="position-relative has-icon-right">
                   <input
+                    name="password"
                     type="password"
                     id="exampleInputPassword"
                     class="form-control input-shadow"

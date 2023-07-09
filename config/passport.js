@@ -3,20 +3,21 @@ const User = require("../models/User");
 
 module.exports = function (passport) {
   passport.use(
-    new LocalStrategy(function verify(username, password, done) {
-      User.findOne({ username: username }, (err, user) => {
-        if (err) {
-          return done(err);
-        }
-        if (!user) {
+    new LocalStrategy(async function verify(username, password, done) {
+      try {
+        const userInDb = await User.findOne({ username: username });
+        if (!userInDb) {
           return done(null, false, { msg: `Username not found.` });
-        }
-        if (user.validPassword(password)) {
-          return done(null, user);
         } else {
-          return done(null, false, { msg: "Invalid username or password." });
+          if (userInDb.validPassword(password)) {
+            return done(null, userInDb);
+          } else {
+            return done(null, false, { msg: "Invalid username or password." });
+          }
         }
-      });
+      } catch (err) {
+        console.error(err);
+      }
     })
   );
 

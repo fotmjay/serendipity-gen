@@ -11,8 +11,8 @@ router.get("/", homeController.getIndex);
 
 // GET Pages
 router.get("/profile", ensureAuth, homeController.getProfile);
-router.get("/login", authController.getLogin);
-router.get("/register", authController.getRegister);
+router.get("/login", homeController.getLogin);
+router.get("/register", homeController.getRegister);
 
 // GET SUGGESTION
 router.post("/requestActivity", limiter, openAIController.postActivity);
