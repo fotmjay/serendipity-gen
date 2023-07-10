@@ -3,6 +3,7 @@ const router = express.Router();
 const { limiter } = require("../config/ratelimiter");
 const homeController = require("../controllers/home");
 const authController = require("../controllers/auth");
+const sugController = require("../controllers/suggestion");
 const openAIController = require("../controllers/openai");
 const { ensureAuth } = require("../middleware/auth");
 
@@ -14,8 +15,9 @@ router.get("/profile", ensureAuth, homeController.getProfile);
 router.get("/login", homeController.getLogin);
 router.get("/register", homeController.getRegister);
 
-// GET SUGGESTION
+// SUGGESTIONS
 router.post("/requestActivity", limiter, openAIController.postActivity);
+router.post("/saveSuggestion", ensureAuth, sugController.saveSuggestion);
 
 // LOGIN
 router.post("/login", authController.postLogin);

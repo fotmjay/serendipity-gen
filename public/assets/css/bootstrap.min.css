@@ -9203,16 +9203,16 @@ ul.alert-message-ul {
   padding: 5px;
 }
 
-ul.dropdown-menu-right li.dropdown-item {
+ul.dropdown-menu-right li.light-up:hover {
+  background: rgba(25, 25, 78, 0.4);
+  border: 1px solid rgba(200, 136, 0, 1);
   cursor: pointer;
 }
 
-ul.dropdown-menu-right li.dropdown-item:hover {
+div.likeSuggestion {
   background: rgba(25, 25, 78, 0.4);
+  color: #ffffff;
   border: 1px solid rgba(200, 136, 0, 1);
-}
-
-ul.dropdown-menu-right li.dropdown-item:hover {
-  background: rgba(25, 25, 78, 0.4);
-  border: 1px solid rgba(200, 136, 0, 1);
+  border-radius: 10px !important;
+  margin-bottom: 5px !important;
 }
