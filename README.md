@@ -9,10 +9,20 @@ To run locally, you need a valid OpenAI API key. You also need credits in your O
 Please ensure you have the following modules installed:
 
 ```
-express
+connect-mongo
 dotenv
+ejs
+express
+express-flash
 express-rate-limit
+express-session
+mongodb
+mongoose
+morgan
 openai
+passport
+passport-local
+validator
 ```
 
 Clone the repository:
@@ -38,6 +48,8 @@ OPENAI_ORG = YOUR_ORG
 
 Start the application with `npm start`.
 
+Alternatively, if you are currently in development, set up the nodemon dev start by adding `"dev": "nodemon server.js"` in your scripts section in package.json and start the server using `npm run dev`.
+
 Visit `http://localhost:3000` in your web browser.
 
 Enter your preferences and click the "Generate" button to receive a serendipitous activity suggestion.
@@ -48,6 +60,8 @@ Enter your preferences and click the "Generate" button to receive a serendipitou
 
 The UI is very basic and needs improvement to provide a visually appealing experience for users.
 
+Updated 2023-07-11:  UI has been revamped using a customized template.
+
 ### Expanded Categories
 
 In addition to activities, categories will be expanded to include hobbies, sports, board games, and video games. This will allow users to explore a wider range of interests.
@@ -55,6 +69,8 @@ In addition to activities, categories will be expanded to include hobbies, sport
 ### Information Profiles
 
 Implement user profiles to gather more detailed information about users' preferences, interests, and past activities. This will enable more accurate and tailored activity suggestions.
+
+Updated 2023-07-11: User authentification as well as suggestions saving has been added.  Other implementations are to come.
 
 ### Integration with External APIs
 
@@ -121,3 +137,7 @@ Parsing through user-input and through OpenAI's Chatbot answers to select and or
 ### Testing and Debugging
 
 Ensuring the app functions correctly.
+
+### Authentification and user sessions
+
+Adding authentification and user sessions was difficult.  I had to read a lot of documentation from Mongoose/MongoDB and Passport to get through it.  The modules have been updated somewhat recently (march 2023) and most guides/detailed documentation wasn't up to date.
