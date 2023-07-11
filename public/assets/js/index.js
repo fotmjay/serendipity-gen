@@ -1,8 +1,12 @@
-document.querySelector("button").addEventListener("click", clearErrors);
+const errorClear = document.querySelector("button");
 document.querySelector(".icon-power").parentElement.addEventListener("click", logOut);
 const errors = document.getElementsByClassName("alert-message-ul");
 const hearts = document.getElementsByClassName("fa-heart-o");
 const trashcans = document.getElementsByClassName("fa-trash");
+
+if (errorClear) {
+  errorClear.addEventListener("click", clearErrors);
+}
 
 Array.from(hearts).forEach((x) => x.addEventListener("click", likeSuggestion));
 Array.from(trashcans).forEach((x) => x.addEventListener("click", deleteSuggestion));
@@ -56,7 +60,7 @@ async function deleteSuggestion(click) {
       }),
     });
     const data = await response.json();
-    //console.log(data);
+    console.log(data);
     location.reload();
   } catch (err) {
     console.log(err);
