@@ -61,6 +61,7 @@ app.use(flash());
 app.use("/", mainRoutes);
 
 // SERVER LAUNCH
+
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}.`);
 });
