@@ -28,7 +28,6 @@ module.exports = {
     })(req, res, next);
   },
   postRegister: async (req, res) => {
-    console.log(req.body);
     // FIELD VALIDATION
     const validationErrors = [];
     const email = validator.trim(req.body.email);

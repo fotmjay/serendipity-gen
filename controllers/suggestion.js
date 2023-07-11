@@ -2,7 +2,6 @@ const Suggestion = require("../models/Suggestion");
 
 module.exports = {
   saveSuggestion: async (req, res) => {
-    console.log(req.body);
     try {
       const alreadyExists = await Suggestion.findOne({ title: req.body.title, user: req.user.id });
       if (!alreadyExists) {
@@ -39,7 +38,6 @@ module.exports = {
     }
   },
   deleteSugg: async (req, res) => {
-    console.log(req.body);
     console.log("in here");
     try {
       await Suggestion.findOneAndUpdate({ _id: req.body.objectId }, { deleted: true });
