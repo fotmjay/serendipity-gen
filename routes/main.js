@@ -1,9 +1,9 @@
 const express = require("express");
 const router = express.Router();
-const { limiter } = require("../config/ratelimiter");
+const { reqLimiter, suggLimiter } = require("../config/ratelimiter");
 const homeController = require("../controllers/home");
 const authController = require("../controllers/auth");
-const sugController = require("../controllers/suggestion");
+const suggController = require("../controllers/suggestion");
 const openAIController = require("../controllers/openai");
 const { ensureAuth } = require("../middleware/auth");
 
@@ -11,13 +11,14 @@ const { ensureAuth } = require("../middleware/auth");
 router.get("/", homeController.getIndex);
 
 // GET Pages
-router.get("/profile", ensureAuth, homeController.getProfile);
 router.get("/login", homeController.getLogin);
 router.get("/register", homeController.getRegister);
 
 // SUGGESTIONS
-router.post("/requestActivity", limiter, openAIController.postActivity);
-router.post("/saveSuggestion", ensureAuth, sugController.saveSuggestion);
+router.post("/requestActivity", reqLimiter, openAIController.postActivity);
+router.post("/saveSuggestion", suggLimiter, ensureAuth, suggController.saveSuggestion);
+router.delete("/deleteSugg", suggLimiter, ensureAuth, suggController.deleteSugg);
+router.get("/profile", ensureAuth, suggController.getProfile);
 
 // LOGIN
 router.post("/login", authController.postLogin);

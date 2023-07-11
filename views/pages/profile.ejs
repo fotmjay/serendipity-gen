@@ -35,20 +35,9 @@
           <li>
             <a href="/"> <i class="zmdi zmdi-view-dashboard"></i> <span>Serendipity Generator</span> </a>
           </li>
-
-          <% if (userLogged) { %>
           <li>
             <a href="/profile"> <i class="zmdi zmdi-face"></i> <span>Profile</span> </a>
           </li>
-          <% } if (!userLogged) { %>
-          <li>
-            <a href="/login"> <i class="zmdi zmdi-lock"></i> <span>Login</span> </a>
-          </li>
-
-          <li>
-            <a href="/register"> <i class="zmdi zmdi-account-circle"></i> <span>Registration</span> </a>
-          </li>
-          <% } %>
         </ul>
       </div>
       <!--End sidebar-wrapper-->
@@ -63,7 +52,6 @@
               </a>
             </li>
           </ul>
-          <% if (userLogged) { %>
           <ul class="navbar-nav align-items-center right-nav-link">
             <li class="nav-item">
               <a class="nav-link dropdown-toggle dropdown-toggle-nocaret" data-toggle="dropdown" href="#">
@@ -98,7 +86,6 @@
               </ul>
             </li>
           </ul>
-          <% } %>
         </nav>
       </header>
       <!--End topbar header-->
@@ -115,71 +102,27 @@
                 </div>
                 <div class="card-body pt-5">
                   <img src="https://via.placeholder.com/110x110" alt="profile-image" class="profile" />
-                  <h5 class="card-title">Mark Stern</h5>
-                  <p class="card-text">
-                    Some quick example text to build on the card title and make up the bulk of the card's content.
-                  </p>
-                  <div class="icon-block">
-                    <a href="javascript:void();"><i class="fa fa-facebook bg-facebook text-white"></i></a>
-                    <a href="javascript:void();"> <i class="fa fa-twitter bg-twitter text-white"></i></a>
-                    <a href="javascript:void();"> <i class="fa fa-google-plus bg-google-plus text-white"></i></a>
-                  </div>
+                  <h5 class="card-title"><%= userLogged.username %></h5>
                 </div>
 
                 <div class="card-body border-top border-light">
                   <div class="media align-items-center">
-                    <div>
-                      <img src="assets/images/timeline/html5.svg" class="skill-img" alt="skill img" />
-                    </div>
                     <div class="media-body text-left ml-3">
-                      <div class="progress-wrapper">
-                        <p>HTML5 <span class="float-right">65%</span></p>
-                        <div class="progress" style="height: 5px">
-                          <div class="progress-bar" style="width: 65%"></div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <hr />
-                  <div class="media align-items-center">
-                    <div><img src="assets/images/timeline/bootstrap-4.svg" class="skill-img" alt="skill img" /></div>
-                    <div class="media-body text-left ml-3">
-                      <div class="progress-wrapper">
-                        <p>Bootstrap 4 <span class="float-right">50%</span></p>
-                        <div class="progress" style="height: 5px">
-                          <div class="progress-bar" style="width: 50%"></div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <hr />
-                  <div class="media align-items-center">
-                    <div><img src="assets/images/timeline/angular-icon.svg" class="skill-img" alt="skill img" /></div>
-                    <div class="media-body text-left ml-3">
-                      <div class="progress-wrapper">
-                        <p>AngularJS <span class="float-right">70%</span></p>
-                        <div class="progress" style="height: 5px">
-                          <div class="progress-bar" style="width: 70%"></div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <hr />
-                  <div class="media align-items-center">
-                    <div><img src="assets/images/timeline/react.svg" class="skill-img" alt="skill img" /></div>
-                    <div class="media-body text-left ml-3">
-                      <div class="progress-wrapper">
-                        <p>React JS <span class="float-right">35%</span></p>
-                        <div class="progress" style="height: 5px">
-                          <div class="progress-bar" style="width: 35%"></div>
-                        </div>
-                      </div>
+                      <ul>
+                        <% suggList.forEach((sugg,i) => { %>
+                        <li data-id="<%=sugg._id%>">
+                          <h5><%=sugg.title%> <%if (sugg._id) { %><i class="fa fa-trash"><%}%></i></h5>
+                          <p><%=sugg.description%></p>
+                        </li>
+                        <% if (i < suggList.length-1){ %>
+                        <hr />
+                        <% }}) %>
+                      </ul>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-
             <div class="col-lg-8">
               <div class="card">
                 <div class="card-body">
@@ -403,7 +346,7 @@
       <!--Start footer-->
       <footer class="footer">
         <div class="container">
-          <div class="text-center">Copyright © 2018 Dashtreme Admin</div>
+          <div class="text-center">©2023 Serendipity Generator</div>
         </div>
       </footer>
       <!--End footer-->

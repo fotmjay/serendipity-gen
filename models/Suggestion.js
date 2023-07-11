@@ -10,7 +10,7 @@ const SuggestionSchema = mongoose.Schema({
     type: String,
     required: true,
   },
-  deleted: { type: String, default: false },
+  deleted: { type: Boolean, default: false },
   user: { type: String, required: true },
 });
 
